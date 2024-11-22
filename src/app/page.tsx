@@ -1,56 +1,66 @@
-"use client"
+
+"use client";
 import { MdDelete } from "react-icons/md";
 import { useState } from "react";
 
-export default function TodoList(){
-  
-  const [todo, settodo]= useState();
-  const [getInput, setgetInput] = useState<string[]>([]); // This is different from getInputany function
+export default function TodoList() {
+  const [todo, setTodo] = useState<string>(""); // State to hold the current input value
+  const [tasks, setTasks] = useState<string[]>([]); // State to hold the list of tasks
 
-  // This is the onChange function
-  const getInputany=(event:any)=>{
-    console.log(event.target.value)
-     settodo(event.target.value)
-  }
-  const getDataany=()=>{
-    console.log(todo);
-    setgetInput((prev: any) => [...prev, todo]); // Add new task to the array
-    settodo(""); 
-    
-  }
+  const handleInputChange = (event: React.ChangeEvent<HTMLInputElement>) => {
+    setTodo(event.target.value); // Update the input value in state
+  };
 
-  const   deleteData =(item:any)=>{
-      console.log(item)
-      let filterData = getInput.filter((crutElem, id)=>{
-            return id != item 
-      })
-      setgetInput(filterData)
+  const addTask = () => {
+    if (todo.trim() !== "") {
+      setTasks((prevTasks) => [...prevTasks, todo]); // Add new task to the tasks array
+      setTodo(""); // Clear the input field after adding the task
+    } else {
+      alert("Task cannot be empty!"); // Prevent adding empty tasks
     }
-  // console.log(getInput)
-  return(
-    <>   
-     <div className="text-2xl flex justify-center items-center bg-blue-300 w-full h-screen">
-          <div>
-            <h1>To-Do Lists</h1>
-           <input type="text" placeholder="Add a task" value={todo} onChange={getInputany}  />
-           <button onClick={getDataany}>Add</button>
-           
-           {/* {getInput} */}
+  };
 
-            {/* Display tasks */}
-         {getInput.map((list, item)=>{
-          return(
-            <div className="listitem">
-              <ul>
-                <li key={item}>{list}</li>
-              </ul>
-              <MdDelete onClick={()=>deleteData(item)} />
-            </div>
-          )
-         })}
-          </div>
+  const deleteTask = (index: number) => {
+    const updatedTasks = tasks.filter((_, id) => id !== index); // Remove task at the specified index
+    setTasks(updatedTasks); // Update the tasks array
+  };
+
+  return (
+    <div className="flex justify-center items-center bg-gradient-to-r from-purple-500 to-blue-500 w-full h-screen p-4">
+      <div className="bg-white shadow-md rounded-lg p-6 w-full max-w-lg">
+        <h1 className="text-3xl font-bold text-center text-gray-800 mb-6">
+          To-Do List
+        </h1>
+        <div className="flex items-center gap-2 mb-4">
+          <input
+            type="text"
+            placeholder="Add a task"
+            value={todo}
+            onChange={handleInputChange} // Handle input changes
+            className="flex-1 p-3 border rounded-lg text-gray-700 focus:outline-none focus:ring focus:ring-purple-300"
+          />
+          <button
+            onClick={addTask} // Add task on button click
+            className="bg-purple-600 text-white px-4 py-2 rounded-lg font-semibold hover:bg-purple-700 transition focus:outline-none focus:ring focus:ring-purple-300"
+          >
+            Add
+          </button>
+        </div>
+        <ul className="space-y-3">
+          {tasks.map((task, index) => (
+            <li
+              key={index}
+              className="flex justify-between items-center bg-gray-100 p-3 rounded-lg shadow-sm"
+            >
+              <span className="text-gray-800">{task}</span>
+              <MdDelete
+                onClick={() => deleteTask(index)} // Delete task on click
+                className="text-red-500 text-xl cursor-pointer hover:text-red-700 transition"
+              />
+            </li>
+          ))}
+        </ul>
       </div>
-      </>
-
-    );
+    </div>
+  );
 }
